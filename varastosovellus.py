@@ -33,9 +33,9 @@ class Varasto:
          self.tuotteet.append(tuote)
          print(f"{tuote} lisätty {varasto_nimi}")
     
-    def poista_tuote(self, name):
+    def poista_tuote(self, nimi):
         for tuote in self.tuotteet:
-            if tuote.name == name:
+            if tuote.nimi == nimi:
                 self.tuotteet.remove(tuote)
                 print("Tuote poistettu.")
                 return
