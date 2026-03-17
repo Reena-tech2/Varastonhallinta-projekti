@@ -45,6 +45,24 @@ class Varasto:
                 return
         print("Tuotetta ei löytynyt.")
         
+    def paivita_tuotteen_tiedot(self, nimi, uusi_hinta=None, uusi_maara=None):
+        for tuote in self.tuotteet:
+            if hasattr(tuote, "nimi") and tuote.nimi == nimi:
+                if uusi_hinta is not None:
+                    if uusi_hinta < 0:
+                        print("Virhe: Hinta ei voi olla negatiivinen")
+                        return
+                    tuote.hinta = uusi_hinta
+                if uusi_maara is not None:
+                    if uusi_maara < 0:
+                        print("Virhe: Määrä ei voi olla negatiivinen")
+                        return
+                    tuote.maara = uusi_maara
+                print(
+                    f"{nimi} päivitetty onnistuneesti: hinta={tuote.hinta}€, määrä={tuote.maara} kpl")
+                return
+        print(f"Tuotetta '{nimi}' ei löytynyt varastosta")
+        
 def tulosta_tietokone():
     """
     Fetch data from the "tietokone" table and print it into the terminal\n
@@ -149,6 +167,65 @@ def poista_komponentti(id):
     cur.execute(sql, (id, ))
     CONN.commit()
     print("Komponentti poistettu")
+    
+    
+def paivita_tuotteen_tiedot(nimi, uusi_hinta=None, uusi_maara=None, luokka="tietokone"):
+    """
+    Update product information directly in the database.
+    
+    Parameters:
+        nimi (str): Name of the product (merkki for tietokone, nimi for komponentti)
+        uusi_hinta (float, optional): New price
+        uusi_maara (int, optional): New quantity
+        luokka (str): "tietokone" or "komponentti"
+    
+    Returns:
+        None
+    """
+    # Choose table and column for name
+    if luokka == "tietokone":
+        table = "tietokone"
+        name_col = "merkki"
+    elif luokka == "komponentti":
+        table = "komponentti"
+        name_col = "nimi"
+    else:
+        print("Virhe: tuntematon tuoteluokka")
+        return
+
+    # Build SQL dynamically depending on which fields to update
+    fields = []
+    values = []
+    if uusi_hinta is not None:
+        if uusi_hinta < 0:
+            print("Virhe: Hinta ei voi olla negatiivinen")
+            return
+        fields.append("hinta = ?")
+        values.append(uusi_hinta)
+    if uusi_maara is not None:
+        if uusi_maara < 0:
+            print("Virhe: Määrä ei voi olla negatiivinen")
+            return
+        fields.append("maara = ?")
+        values.append(uusi_maara)
+
+    if not fields:
+        print("Ei muutettavia tietoja.")
+        return
+
+    # Add the name for WHERE clause
+    values.append(nimi)
+
+    sql = f"UPDATE {table} SET {', '.join(fields)} WHERE {name_col} = ? COLLATE NOCASE"
+    
+    cursor = CONN.cursor()
+    cursor.execute(sql,values)
+    CONN.commit()
+
+    if cursor.rowcount == 0:
+        print(f"Tuotetta '{nimi}' ei löytynyt tietokannasta.")
+    else:
+        print(f"{nimi} päivitetty onnistuneesti: hinta={uusi_hinta}, määrä={uusi_maara}")
 
 def main ():
     """
@@ -157,7 +234,8 @@ def main ():
     global CONN
     os.system("cls")
     try:
-        database = r"C:\Users\satuh\Documents\GitHub\Varastonhallinta-projekti\varasto.db"
+        database = "varasto.db" #Muutetaan tietokannan polku suhteelliseksi, jotta se toimii millä tahansa tietokoneella
+
         CONN = sqlite3.connect(database)
         while 1:
             print("VARASTONHALLINTA")
@@ -166,7 +244,8 @@ def main ():
             print("1: Tulosta varasto")
             print("2: Lisää tuote")
             print("3: Poista tuote")
-            print("4: Sulje ohjelma")
+            print("4: Paivita_tuotteen_tiedot")
+            print("5: Sulje ohjelma")
 
             user_input = input("Value: ")
             if user_input == "1":
@@ -208,13 +287,31 @@ def main ():
                 if luokka == "2":
                     os.system("cls")
                     poista_komponentti(id)
-
+                    
             if user_input == "4":
+               if user_input == "4":
+                   os.system("cls")
+                   luokka = input("1. Tietokone \n2. Komponentti \nValitse numerolla päivitettävän tuotteen luokka: ")
+                   nimi = input("Anna tuotteen nimi: ")
+                   hinta_input = input("Anna uusi hinta : ")
+                   maara_input = input("Anna uusi määrä : ")
+
+                   uusi_hinta = float(hinta_input) if hinta_input else None
+                   uusi_maara = int(maara_input) if maara_input else None
+
+                   if luokka == "1":
+                      paivita_tuotteen_tiedot(nimi, uusi_hinta, uusi_maara, luokka ="tietokone")
+                   elif luokka == "2":
+                      paivita_tuotteen_tiedot(nimi, uusi_hinta, uusi_maara, luokka ="komponentti")
+                       
+            
+
+            if user_input == "5":
                 os.system("cls")
                 print("Suljetaan ohjelma")
                 os._exit(0)
 
-            elif user_input not in ["1", "2", "3", "4"]:
+            elif user_input not in ["1", "2", "3", "4","5"]:
                 os.system("cls")
                 print("Väärä valinta")    
     finally:
@@ -226,6 +323,11 @@ if __name__ == "__main__":
         
     
 
+
+   
+
+   # def poista_tuote(self,poista_tuote):
+    # Lisämme koodia tuotteen poistamiseksi
 
     
     
