@@ -1,10 +1,11 @@
 
-#tuote class
+# tuote class
 class Tietokone:
     def __init__(self, merkki, malli, hinta):
         self.merkki = merkki
         self.malli = malli
         self.hinta = hinta
+
     def nayta_tiedot(self):
        print(f"Merkki:{self.merkki}")
        print(f"Malli:{self.malli}")
@@ -20,14 +21,15 @@ class Komponentti:
         print(f"komponentti_nimi:{self.nimi}")
         print(f"komponentti_maara:{self.maara}")
         print(f"komponentti_hinta:{self.hinta}")
-        
- #Jos haluamme lisätä uusia tuotetyyppejä,voimme tehdä uuden luokan
+
+ # Jos haluamme lisätä uusia tuotetyyppejä,voimme tehdä uuden luokan
+
 
 class Varasto:
     def __init__(self, varasto_nimi):
         self.varasto_nimi = varasto_nimi
-        self.tuotteet= []
-        
+        self.tuotteet = []
+
     def lisaa_tuote(self, tuote):
     #Lisämme koodia tuotteen lisäämiseksi
          self.tuotteet.append(tuote)
