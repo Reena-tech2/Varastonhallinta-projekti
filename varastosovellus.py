@@ -326,13 +326,4 @@ if __name__ == "__main__":
 
    
 
-   # def poista_tuote(self,poista_tuote):
-    # Lisämme koodia tuotteen poistamiseksi
-
-    
-    
-    #def paivita_hinta(self,uusi_hinta):
-    #Lisämme koodia päivittääkse hinnan
-    
-    
-    #Lisämme enemmän function tähän
+   
