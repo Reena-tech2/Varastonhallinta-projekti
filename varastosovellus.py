@@ -261,6 +261,9 @@ def main ():
                 if luokka == "1":
                     os.system("cls")
                     merkki = input("Merkki: ")
+                    if not merkki.strip():
+                        print("Merkki ei voi olla tyhjä")
+                        continue
                     malli = input("Malli: ")
                     hinta = input("Hinta €: ")
                     maara = input("Määrä: ")
