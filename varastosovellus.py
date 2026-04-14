@@ -8,12 +8,11 @@ class Tietokone:
         self.hinta = hinta
         self.maara = maara
     def nayta_tiedot(self):
-       print(f"Merkki: {self.merkki}")
-       print(f"Malli: {self.malli}")
-       print(f"Hinta: {self.hinta}")
-       print(f"Määrä: {self.maara}")
+        print(f"Merkki: {self.merkki}")
+        print(f"Malli: {self.malli}")
+        print(f"Hinta: {self.hinta}")
+        print(f"Määrä: {self.maara}")
        
-        
 class Komponentti:
     def __init__(self, nimi, maara, hinta):
         self.nimi = nimi
@@ -24,7 +23,7 @@ class Komponentti:
         print(f"Hinta: {self.hinta}")
         print(f"Määrä: {self.maara}")
 
- # Jos haluamme lisätä uusia tuotetyyppejä,voimme tehdä uuden luokan
+ # Jos haluamme lisätä uusia tuotetyyppejä, voimme tehdä uuden luokan
 
 
 class Varasto:
@@ -270,6 +269,9 @@ def main ():
                 if luokka == "2":
                     os.system("cls")
                     nimi = input("Tuotenimi: ")
+                    if not nimi.strip():
+                        print("Nimi ei voi olla tyhjä")
+                        continue
                     hinta = input("Hinta €: ")
                     maara = input("Määrä: ")
                     os.system("cls")
@@ -289,10 +291,12 @@ def main ():
                     poista_komponentti(id)
                     
             if user_input == "4":
-               if user_input == "4":
                    os.system("cls")
                    luokka = input("1. Tietokone \n2. Komponentti \nValitse numerolla päivitettävän tuotteen luokka: ")
                    nimi = input("Anna tuotteen nimi: ")
+                   if not nimi.strip():
+                        print("Nimi ei voi olla tyhjä")
+                        continue
                    hinta_input = input("Anna uusi hinta : ")
                    maara_input = input("Anna uusi määrä : ")
 
