@@ -8,12 +8,11 @@ class Tietokone:
         self.hinta = hinta
         self.maara = maara
     def nayta_tiedot(self):
-       print(f"Merkki: {self.merkki}")
-       print(f"Malli: {self.malli}")
-       print(f"Hinta: {self.hinta}")
-       print(f"Määrä: {self.maara}")
+        print(f"Merkki: {self.merkki}")
+        print(f"Malli: {self.malli}")
+        print(f"Hinta: {self.hinta}")
+        print(f"Määrä: {self.maara}")
        
-        
 class Komponentti:
     def __init__(self, nimi, maara, hinta):
         self.nimi = nimi
@@ -24,7 +23,7 @@ class Komponentti:
         print(f"Hinta: {self.hinta}")
         print(f"Määrä: {self.maara}")
 
- # Jos haluamme lisätä uusia tuotetyyppejä,voimme tehdä uuden luokan
+ # Jos haluamme lisätä uusia tuotetyyppejä, voimme tehdä uuden luokan
 
 
 class Varasto:
@@ -279,7 +278,7 @@ def main ():
             print("1: Tulosta varasto")
             print("2: Lisää tuote")
             print("3: Poista tuote")
-            print("4: Paivita_tuotteen_tiedot")
+            print("4: Päivitä tuotteen tiedot")
             print("5: Sulje ohjelma")
 
             user_input = input("Value: ")
@@ -292,11 +291,18 @@ def main ():
 
             if user_input == "2":
                 os.system("cls")
-                luokka = input("1. Tietokone \n2. Komponentti \nValitse numerolla lisättävän tuotteen luokka: ")
+                luokka = input("1. Tietokone \n2. Komponentti \nValitse lisättävän tuotteen luokka numerolla: ")
+                
+                if luokka not in ["1", "2"]:
+                        print("Virhe: Valitse 1 tai 2")
+                        continue
 
                 if luokka == "1":
                     os.system("cls")
                     merkki = input("Merkki: ")
+                    if not merkki.strip():
+                        print("Merkki ei voi olla tyhjä")
+                        continue
                     malli = input("Malli: ")
                     hinta = input("Hinta €: ")
                     maara = input("Määrä: ")
@@ -305,6 +311,9 @@ def main ():
                 if luokka == "2":
                     os.system("cls")
                     nimi = input("Tuotenimi: ")
+                    if not nimi.strip():
+                        print("Nimi ei voi olla tyhjä")
+                        continue
                     hinta = input("Hinta €: ")
                     maara = input("Määrä: ")
                     os.system("cls")
@@ -313,7 +322,12 @@ def main ():
             if user_input == "3":
                 os.system("cls")
                 os.system("cls")
-                luokka = input("1. Tietokone \n2. Komponentti \nValitse numerolla poistettavan tuotteen luokka: ")
+                luokka = input("1. Tietokone \n2. Komponentti \nValitse poistettavan tuotteen luokka numerolla: ")
+                
+                if luokka not in ["1", "2"]:
+                        print("Virhe: Valitse 1 tai 2")
+                        continue
+                    
                 id = int(input("Anna poistettavan tuotteen ID: "))
 
                 if luokka == "1":
@@ -324,19 +338,26 @@ def main ():
                     poista_komponentti(id)
                     
             if user_input == "4":
-               if user_input == "4":
-                   os.system("cls")
-                   luokka = input("1. Tietokone \n2. Komponentti \nValitse numerolla päivitettävän tuotteen luokka: ")
-                   nimi = input("Anna tuotteen nimi: ")
-                   hinta_input = input("Anna uusi hinta : ")
-                   maara_input = input("Anna uusi määrä : ")
+                    os.system("cls")
+                    luokka = input("1. Tietokone \n2. Komponentti \nValitse päivitettävän tuotteen luokka numerolla: ")
+                    
+                    if luokka not in ["1", "2"]:
+                        print("Virhe: Valitse 1 tai 2")
+                        continue
+                   
+                    nimi = input("Anna tuotteen nimi: ")
+                    if not nimi.strip():
+                        print("Nimi ei voi olla tyhjä")
+                        continue
+                    hinta_input = input("Anna uusi hinta : ")
+                    maara_input = input("Anna uusi määrä : ")
 
-                   uusi_hinta = float(hinta_input) if hinta_input else None
-                   uusi_maara = int(maara_input) if maara_input else None
+                    uusi_hinta = float(hinta_input) if hinta_input else None
+                    uusi_maara = int(maara_input) if maara_input else None
 
-                   if luokka == "1":
+                    if luokka == "1":
                       paivita_tuotteen_tiedot(nimi, uusi_hinta, uusi_maara, luokka ="tietokone")
-                   elif luokka == "2":
+                    elif luokka == "2":
                       paivita_tuotteen_tiedot(nimi, uusi_hinta, uusi_maara, luokka ="komponentti")
                        
             
