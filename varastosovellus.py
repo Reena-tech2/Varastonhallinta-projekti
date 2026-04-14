@@ -283,7 +283,7 @@ def main():
             print("1: Tulosta varasto")
             print("2: Lisää tuote")
             print("3: Poista tuote")
-            print("4: Paivita_tuotteen_tiedot")
+            print("4: Päivitä tuotteen tiedot")
             print("5: Sulje ohjelma")
 
             user_input = input("Value: ")
