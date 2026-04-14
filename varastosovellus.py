@@ -98,42 +98,77 @@ def tulosta_komponentti():
         print(row)
 
 def lisaa_tietokone(merkki, malli, hinta, maara):
-    """
-    Adds data to the database with given values.\n
-    Parameters:\n
-        merkki (string)\n
-        malli (string)\n
-        hinta (string)\n
-        maara (integer)\n
-    Returns:\n
-        None\n
-    Example:\n
-        lisaa_tietokone(HP, model666, 666, 66)
-    """
-    sql = """INSERT INTO tietokone (merkki, malli, hinta, maara) VALUES (?, ?, ?, ?)"""
     cursor = CONN.cursor()
-    cursor.execute(sql, (merkki, malli, hinta, maara))
+
+    merkki = merkki.strip().lower()
+    malli = malli.strip().lower()
+    hinta = float(hinta)
+    maara = int(maara)
+
+    # check if exists
+    cursor.execute("""
+        SELECT maara FROM tietokone
+        WHERE merkki = ? AND malli = ?
+    """, (merkki, malli))
+
+    result = cursor.fetchone()
+
+    if result:
+        uusi_maara = result[0] + maara
+
+        cursor.execute("""
+            UPDATE tietokone
+            SET maara = ?, hinta = ?
+            WHERE merkki = ? AND malli = ?
+        """, (uusi_maara, hinta, merkki, malli))
+
+        print("Tietokone päivitetty")
+
+    else:
+        cursor.execute("""
+            INSERT INTO tietokone (merkki, malli, hinta, maara)
+            VALUES (?, ?, ?, ?)
+        """, (merkki, malli, hinta, maara))
+
+        print("Tietokone lisätty")
+
     CONN.commit()
-    print("Tietokone lisätty")
 
 def lisaa_komponentti(nimi, hinta, maara):
-    """
-    Adds data to the database with given values.\n
-    Parameters:\n
-        nimi (string)\n
-        hinta (string)\n
-        maara (integer)\n
-    Returns:\n
-        None\n
-    Example:\n
-        lisaa_komponentti(muistikampa 8Gb, 123, 12)
-    """
-    sql = """INSERT INTO komponentti (nimi, hinta, maara) VALUES (?, ?, ?)"""
     cursor = CONN.cursor()
-    cursor.execute(sql, (nimi, hinta, maara))
-    CONN.commit()
-    print("Komponentti lisätty")
 
+    nimi = nimi.strip().lower()
+    hinta = float(hinta)
+    maara = int(maara)
+
+    # check if exists
+    cursor.execute("""
+        SELECT maara FROM komponentti
+        WHERE nimi = ? COLLATE NOCASE
+    """, (nimi,))
+
+    result = cursor.fetchone()
+
+    if result:
+        uusi_maara = result[0] + maara
+
+        cursor.execute("""
+            UPDATE komponentti
+            SET maara = ?, hinta = ?
+            WHERE nimi = ? COLLATE NOCASE
+        """, (uusi_maara, hinta, nimi))
+
+        print("Komponentti päivitetty")
+
+    else:
+        cursor.execute("""
+            INSERT INTO komponentti (nimi, hinta, maara)
+            VALUES (?, ?, ?)
+        """, (nimi, hinta, maara))
+
+        print("Komponentti lisätty")
+
+    CONN.commit()
 def poista_tietokone(id):
     """
     Remove data from database based on the given ID.\n
