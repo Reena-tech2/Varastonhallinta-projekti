@@ -265,20 +265,52 @@ def main ():
                         print("Merkki ei voi olla tyhjä")
                         continue
                     malli = input("Malli: ")
-                    hinta = input("Hinta €: ")
-                    maara = input("Määrä: ")
+                    while True:
+                        try:
+                            hinta = float(input("Hinta €, syötä muodossa xx.xx: "))
+                            if hinta > 0:
+                                break
+                            else:
+                                print("Hinta ei voi olla negatiivinen luku")
+                        except ValueError:
+                            print("Syötä hyväksyttävä luku")
+                    while True:
+                        try:
+                            maara = float(input("Määrä: "))
+                            if maara > 0:
+                                break
+                            else:
+                                print("Määrä ei voi olla negatiivinen luku")
+                        except ValueError:
+                            print("Syötä hyväksyttävä luku")
                     os.system("cls")
-                    lisaa_tietokone(merkki, malli, hinta, int(maara))
+                    lisaa_tietokone(merkki, malli, hinta, maara)
                 if luokka == "2":
                     os.system("cls")
                     nimi = input("Tuotenimi: ")
                     if not nimi.strip():
                         print("Nimi ei voi olla tyhjä")
                         continue
-                    hinta = input("Hinta €: ")
-                    maara = input("Määrä: ")
+                    while True:
+                        try:
+                            hinta = float(input("Hinta €, syötä muodossa xx.xx: "))
+                            if hinta > 0:
+                                break
+                            else:
+                                print("Hinta ei voi olla negatiivinen luku")
+                        except ValueError:
+                            print("Syötä hyväksyttävä luku")
+                    while True:
+                            try:
+                                maara = float(input("Määrä: "))
+                                if maara > 0:
+                                    break
+                                else:
+                                    print("Määrä ei voi olla negatiivinen luku")
+                            except ValueError:
+                                print("Syötä hyväksyttävä luku")
                     os.system("cls")
-                    lisaa_komponentti(nimi, hinta, int(maara))
+                    lisaa_komponentti(nimi, hinta, maara)
 
             if user_input == "3":
                 os.system("cls")
