@@ -1,28 +1,23 @@
 import sqlite3
 import os
 # tuote class
-
-
 class Tietokone:
     def __init__(self, merkki, malli, hinta, maara):
         self.merkki = merkki
         self.malli = malli
         self.hinta = hinta
         self.maara = maara
-
     def nayta_tiedot(self):
         print(f"Merkki: {self.merkki}")
         print(f"Malli: {self.malli}")
         print(f"Hinta: {self.hinta}")
         print(f"Määrä: {self.maara}")
-
-
+       
 class Komponentti:
     def __init__(self, nimi, maara, hinta):
         self.nimi = nimi
         self.hinta = hinta
         self.maara = maara
-
     def nayta_tiedot(self):
         print(f"Nimi: {self.nimi}")
         print(f"Hinta: {self.hinta}")
@@ -37,10 +32,10 @@ class Varasto:
         self.tuotteet = []
 
     def lisaa_tuote(self, tuote):
-        # Lisämme koodia tuotteen lisäämiseksi
-        self.tuotteet.append(tuote)
-        print(f"{tuote} lisätty {self.varasto_nimi}")
-
+    #Lisämme koodia tuotteen lisäämiseksi
+         self.tuotteet.append(tuote)
+         print(f"{tuote} lisätty {self.varasto_nimi}")
+    
     def poista_tuote(self, nimi):
         for tuote in self.tuotteet:
             if tuote.nimi == nimi:
@@ -48,7 +43,7 @@ class Varasto:
                 print("Tuote poistettu.")
                 return
         print("Tuotetta ei löytynyt.")
-
+        
     def paivita_tuotteen_tiedot(self, nimi, uusi_hinta=None, uusi_maara=None):
         for tuote in self.tuotteet:
             if hasattr(tuote, "nimi") and tuote.nimi == nimi:
@@ -66,8 +61,7 @@ class Varasto:
                     f"{nimi} päivitetty onnistuneesti: hinta={tuote.hinta}€, määrä={tuote.maara} kpl")
                 return
         print(f"Tuotetta '{nimi}' ei löytynyt varastosta")
-
-
+        
 def tulosta_tietokone():
     """
     Fetch data from the "tietokone" table and print it into the terminal\n
@@ -77,14 +71,13 @@ def tulosta_tietokone():
         None
     Example:\n
         tulosta_tietokone()
-    """
+    """    
     sql = """SELECT * FROM tietokone"""
     cur = CONN.cursor()
     cur.execute(sql)
     rows = cur.fetchall()
     for row in rows:
         print(row)
-
 
 def tulosta_komponentti():
     """
@@ -95,7 +88,7 @@ def tulosta_komponentti():
         None
     Example:\n
         tulosta_komponentti()
-    """
+    """    
     sql = """SELECT * FROM komponentti"""
     cur = CONN.cursor()
     cur.execute(sql)
@@ -103,107 +96,42 @@ def tulosta_komponentti():
     for row in rows:
         print(row)
 
-
-def tulosta_yksi_tietokone(merkki):
-    sql = """SELECT * FROM tietokone WHERE merkki = ? COLLATE NOCASE"""
-    cur = CONN.cursor()
-    cur.execute(sql, (merkki,))
-    row = cur.fetchone()
-    if row:
-        print(
-            f"ID: {row[0]}, Merkki: {row[1]}, Malli: {row[2]}, Hinta: {row[3]}€, Määrä: {row[4]} kpl")
-    else:
-        print(f"Tietokonetta merkillä '{merkki}' ei löytynyt.")
-    cur.close()
-
-
-def tulosta_yksi_komponentti(nimi):
-    sql = """SELECT * FROM komponentti WHERE nimi = ? COLLATE NOCASE"""
-    cur = CONN.cursor()
-    cur.execute(sql, (nimi,))
-    row = cur.fetchone()
-    if row:
-        print(
-            f"ID: {row[0]}, Nimi: {row[1]}, Hinta: {row[2]}€, Määrä: {row[3]} kpl")
-    else:
-        print(f"Komponenttia nimellä '{nimi}' ei löytynyt.")
-    cur.close()
-
-
 def lisaa_tietokone(merkki, malli, hinta, maara):
+    """
+    Adds data to the database with given values.\n
+    Parameters:\n
+        merkki (string)\n
+        malli (string)\n
+        hinta (string)\n
+        maara (integer)\n
+    Returns:\n
+        None\n
+    Example:\n
+        lisaa_tietokone(HP, model666, 666, 66)
+    """
+    sql = """INSERT INTO tietokone (merkki, malli, hinta, maara) VALUES (?, ?, ?, ?)"""
     cursor = CONN.cursor()
-
-    merkki = merkki.strip().lower()
-    malli = malli.strip().lower()
-    hinta = float(hinta)
-    maara = int(maara)
-
-    # check if exists
-    cursor.execute("""
-        SELECT maara FROM tietokone
-        WHERE merkki = ? AND malli = ?
-    """, (merkki, malli))
-
-    result = cursor.fetchone()
-
-    if result:
-        uusi_maara = result[0] + maara
-
-        cursor.execute("""
-            UPDATE tietokone
-            SET maara = ?, hinta = ?
-            WHERE merkki = ? AND malli = ?
-        """, (uusi_maara, hinta, merkki, malli))
-
-        print("Tietokone päivitetty")
-
-    else:
-        cursor.execute("""
-            INSERT INTO tietokone (merkki, malli, hinta, maara)
-            VALUES (?, ?, ?, ?)
-        """, (merkki, malli, hinta, maara))
-
-        print("Tietokone lisätty")
-
+    cursor.execute(sql, (merkki, malli, hinta, maara))
     CONN.commit()
-
+    print("Tietokone lisätty")
 
 def lisaa_komponentti(nimi, hinta, maara):
+    """
+    Adds data to the database with given values.\n
+    Parameters:\n
+        nimi (string)\n
+        hinta (string)\n
+        maara (integer)\n
+    Returns:\n
+        None\n
+    Example:\n
+        lisaa_komponentti(muistikampa 8Gb, 123, 12)
+    """
+    sql = """INSERT INTO komponentti (nimi, hinta, maara) VALUES (?, ?, ?)"""
     cursor = CONN.cursor()
-
-    nimi = nimi.strip().lower()
-    hinta = float(hinta)
-    maara = int(maara)
-
-    # check if exists
-    cursor.execute("""
-        SELECT maara FROM komponentti
-        WHERE nimi = ? COLLATE NOCASE
-    """, (nimi,))
-
-    result = cursor.fetchone()
-
-    if result:
-        uusi_maara = result[0] + maara
-
-        cursor.execute("""
-            UPDATE komponentti
-            SET maara = ?, hinta = ?
-            WHERE nimi = ? COLLATE NOCASE
-        """, (uusi_maara, hinta, nimi))
-
-        print("Komponentti päivitetty")
-
-    else:
-        cursor.execute("""
-            INSERT INTO komponentti (nimi, hinta, maara)
-            VALUES (?, ?, ?)
-        """, (nimi, hinta, maara))
-
-        print("Komponentti lisätty")
-
+    cursor.execute(sql, (nimi, hinta, maara))
     CONN.commit()
-
+    print("Komponentti lisätty")
 
 def poista_tietokone(id):
     """
@@ -222,7 +150,6 @@ def poista_tietokone(id):
     CONN.commit()
     print("Tietokone poistettu")
 
-
 def poista_komponentti(id):
     """
     Remove data from database based on the given ID.\n
@@ -239,18 +166,18 @@ def poista_komponentti(id):
     cur.execute(sql, (id, ))
     CONN.commit()
     print("Komponentti poistettu")
-
-
+    
+    
 def paivita_tuotteen_tiedot(nimi, uusi_hinta=None, uusi_maara=None, luokka="tietokone"):
     """
     Update product information directly in the database.
-
+    
     Parameters:
         nimi (str): Name of the product (merkki for tietokone, nimi for komponentti)
         uusi_hinta (float, optional): New price
         uusi_maara (int, optional): New quantity
         luokka (str): "tietokone" or "komponentti"
-
+    
     Returns:
         None
     """
@@ -289,27 +216,24 @@ def paivita_tuotteen_tiedot(nimi, uusi_hinta=None, uusi_maara=None, luokka="tiet
     values.append(nimi)
 
     sql = f"UPDATE {table} SET {', '.join(fields)} WHERE {name_col} = ? COLLATE NOCASE"
-
+    
     cursor = CONN.cursor()
-    cursor.execute(sql, values)
+    cursor.execute(sql,values)
     CONN.commit()
 
     if cursor.rowcount == 0:
         print(f"Tuotetta '{nimi}' ei löytynyt tietokannasta.")
     else:
-        print(
-            f"{nimi} päivitetty onnistuneesti: hinta={uusi_hinta}, määrä={uusi_maara}")
+        print(f"{nimi} päivitetty onnistuneesti: hinta={uusi_hinta}, määrä={uusi_maara}")
 
-
-def main():
+def main ():
     """
     Main function for the program
     """
     global CONN
     os.system("cls")
     try:
-        # Muutetaan tietokannan polku suhteelliseksi, jotta se toimii millä tahansa tietokoneella
-        database = "varasto.db"
+        database = "varasto.db" #Muutetaan tietokannan polku suhteelliseksi, jotta se toimii millä tahansa tietokoneella
 
         CONN = sqlite3.connect(database)
         while 1:
@@ -322,108 +246,96 @@ def main():
             print("4: Päivitä tuotteen tiedot")
             print("5: Sulje ohjelma")
 
-            user_input = input("Value: ")
-
+            user_input = input("Valitse toiminto: ")
             if user_input == "1":
                 os.system("cls")
-                print("1. Tulosta kaikki tuotteet")
-                print("2. Hae tietty tietokone")
-                print("3. Hae tietty komponentti")
-                valinta = input("Valitse toiminto: ")
-
-                if valinta == "1":
-                    os.system("cls")
-                    print("TIETOKONEET:")
-                    tulosta_tietokone()
-                    print("\nKOMPONENTIT:")
-                    tulosta_komponentti()
-
-                elif valinta == "2":
-                    merkki = input("Anna tietokoneen merkki: ")
-                    if not merkki.strip():
-                        print("Merkki ei voi olla tyhjä")
-                        continue
-                    os.system("cls")
-                    print("TIETOKONE:")
-                    tulosta_yksi_tietokone(merkki)
-
-                elif valinta == "3":
-                    nimi = input("Anna komponentin nimi: ")
-                    if not nimi.strip():
-                        print("Nimi ei voi olla tyhjä")
-                        continue
-                    os.system("cls")
-                    print("KOMPONENTTI:")
-                    tulosta_yksi_komponentti(nimi)
-
-                else:
-                    os.system("cls")
-                    print("Väärä valinta")
+                print("TIETOKONEET:")
+                tulosta_tietokone()
+                print("\nKOMPONENTIT:")
+                tulosta_komponentti()
 
             if user_input == "2":
                 os.system("cls")
-                luokka = input("1. Tietokone \n2. Komponentti \nValitse numerolla lisättävän tuotteen luokka: ")
+                luokka = input("1. Tietokone \n2. Komponentti \nValitse lisättävän tuotteen luokka numerolla: ")
+                
+                if luokka not in ["1", "2"]:
+                        print("Virhe: Valitse 1 tai 2")
+                        continue
 
                 if luokka == "1":
                     os.system("cls")
+                    
                     merkki = input("Merkki: ")
                     if not merkki.strip():
                         print("Merkki ei voi olla tyhjä")
                         continue
+                    
                     malli = input("Malli: ")
-                    while True:
-                        try:
-                            hinta = float(input("Hinta €, syötä muodossa xx.xx: "))
-                            if hinta > 0:
-                                break
-                            else:
-                                print("Hinta ei voi olla negatiivinen luku")
-                        except ValueError:
-                            print("Syötä hyväksyttävä luku")
-                    while True:
-                        try:
-                            maara = float(input("Määrä: "))
-                            if maara > 0:
-                                break
-                            else:
-                                print("Määrä ei voi olla negatiivinen luku")
-                        except ValueError:
-                            print("Syötä hyväksyttävä luku")
+                    if not malli.strip():
+                        print("Malli ei voi olla tyhjä")
+                        continue
+                    
+                    hinta = input("Hinta €: ")
+                    try:
+                        hinta = float(hinta)
+                        if hinta < 0:
+                            print("Virhe: Hinta ei voi olla negatiivinen")
+                            continue
+                    except ValueError:
+                        print("Virhe: Hinta täytyy olla numero")
+                        continue
+                    
+                    maara = input("Määrä: ")
+                    try:
+                        maara = int(maara)
+                        if maara < 0:
+                            print("Virhe: määrä ei voi olla negatiivinen")
+                            continue
+                    except ValueError:
+                        print("Virhe: Määrä täytyy olla kokonaisluku")
+                        continue
+                    
                     os.system("cls")
-                    lisaa_tietokone(merkki, malli, hinta, maara)
-
+                    lisaa_tietokone(merkki, malli, hinta, int(maara))
+                    
                 if luokka == "2":
                     os.system("cls")
                     nimi = input("Tuotenimi: ")
                     if not nimi.strip():
                         print("Nimi ei voi olla tyhjä")
                         continue
-                    while True:
-                        try:
-                            hinta = float(input("Hinta €, syötä muodossa xx.xx: "))
-                            if hinta > 0:
-                                break
-                            else:
-                                print("Hinta ei voi olla negatiivinen luku")
-                        except ValueError:
-                            print("Syötä hyväksyttävä luku")
-                    while True:
-                            try:
-                                maara = float(input("Määrä: "))
-                                if maara > 0:
-                                    break
-                                else:
-                                    print("Määrä ei voi olla negatiivinen luku")
-                            except ValueError:
-                                print("Syötä hyväksyttävä luku")
+                    
+                    hinta = input("Hinta €: ")
+                    try:
+                        hinta = float(hinta)
+                        if hinta < 0:
+                            print("Virhe: Hinta ei voi olla negatiivinen")
+                            continue
+                    except ValueError:
+                        print("Virhe: Hinta täytyy olla numero")
+                        continue
+                    
+                    maara = input("Määrä: ")
+                    try:
+                        maara = int(maara)
+                        if maara < 0:
+                            print("Virhe: Määrä ei voi olla negatiivinen")
+                            continue
+                    except ValueError:
+                        print("Virhe: Määrä täytyy olla kokonaisluku")
+                        continue
+                    
                     os.system("cls")
-                    lisaa_komponentti(nimi, hinta, maara)
+                    lisaa_komponentti(nimi, hinta, int(maara))
 
             if user_input == "3":
                 os.system("cls")
-                os.system("cls")
-                luokka = input(
-                    "1. Tietokone \n2. Komponentti \nValitse numerolla poistettavan tuotteen luokka: ")
+                luokka = input("1. Tietokone \n2. Komponentti \nValitse poistettavan tuotteen luokka numerolla: ")
+                
+                if luokka not in ["1", "2"]:
+                        print("Virhe: Valitse 1 tai 2")
+                        continue
+                    
                 id = int(input("Anna poistettavan tuotteen ID: "))
 
                 if luokka == "1":
@@ -432,40 +344,71 @@ def main():
                 if luokka == "2":
                     os.system("cls")
                     poista_komponentti(id)
-
+                    
             if user_input == "4":
-                os.system("cls")
-                luokka = input(
-                    "1. Tietokone \n2. Komponentti \nValitse numerolla päivitettävän tuotteen luokka: ")
-                nimi = input("Anna tuotteen nimi: ")
-                if not nimi.strip():
-                    print("Nimi ei voi olla tyhjä")
-                    continue
-                hinta_input = input("Anna uusi hinta : ")
-                maara_input = input("Anna uusi määrä : ")
+                    os.system("cls")
+                    luokka = input("1. Tietokone \n2. Komponentti \nValitse päivitettävän tuotteen luokka numerolla: ")
+                    
+                    if luokka not in ["1", "2"]:
+                        print("Virhe: Valitse 1 tai 2")
+                        continue
+                   
+                    nimi = input("Anna tuotteen nimi: ")
+                    if not nimi.strip():
+                        print("Nimi ei voi olla tyhjä")
+                        continue
+                    
+                    hinta_input = input("Anna uusi hinta : ")
+                    if hinta_input:
+                        try:
+                            uusi_hinta = float(hinta_input)
+                            if uusi_hinta < 0:
+                                print("Virhe: Hinta ei voi olla negatiivinen")
+                                continue
+                        except ValueError:
+                            print("Virhe: Hinta täytyy olla numero")
+                            continue
+                    else:
+                        uusi_hinta = None
+                            
+                    maara_input = input("Anna uusi määrä : ")
+                    if maara_input:
+                        try:
+                            uusi_maara = int(maara_input)
+                            if uusi_maara < 0:
+                                print("Virhe: Määrä ei voi olla negatiivinen")
+                                continue
+                        except ValueError:
+                            print("Virhe: Määrä täytyy olla kokonaisluku")
+                            continue
+                    else:
+                        uusi_maara = None
 
-                uusi_hinta = float(hinta_input) if hinta_input else None
-                uusi_maara = int(maara_input) if maara_input else None
-
-                if luokka == "1":
-                    paivita_tuotteen_tiedot(
-                        nimi, uusi_hinta, uusi_maara, luokka="tietokone")
-                elif luokka == "2":
-                    paivita_tuotteen_tiedot(
-                        nimi, uusi_hinta, uusi_maara, luokka="komponentti")
+                    if luokka == "1":
+                      paivita_tuotteen_tiedot(nimi, uusi_hinta, uusi_maara, luokka ="tietokone")
+                    elif luokka == "2":
+                      paivita_tuotteen_tiedot(nimi, uusi_hinta, uusi_maara, luokka ="komponentti")
+                       
+            
 
             if user_input == "5":
                 os.system("cls")
                 print("Suljetaan ohjelma")
                 os._exit(0)
 
-            elif user_input not in ["1", "2", "3", "4", "5"]:
+            elif user_input not in ["1", "2", "3", "4","5"]:
                 os.system("cls")
-                print("Väärä valinta")
+                print("Väärä valinta")    
     finally:
         if CONN:
             CONN.close()
 
-
 if __name__ == "__main__":
     main()
+        
+    
+
+
+   
+
+   
