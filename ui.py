@@ -149,50 +149,186 @@ maara_entry.grid(row=0, column=9)
 ttk.Button(add_frame, text="Lisää", command=lisaa_tuote_ui).grid(
     row=0, column=10, padx=10)
 
+
+
+
 # Poista tuote
+def poista_tietokone(id_value):
+    try:
+        cur = CONN.cursor()
+        cur.execute("DELETE FROM tietokone WHERE id = ?", (id_value,))
+        CONN.commit()
+        print("Tietokone poistettu")
+    except Exception as e:
+        print("ERROR (tietokone):", e)
+
+def poista_komponentti(id_value):
+    try:
+        cur = CONN.cursor()
+        cur.execute("SELECT * FROM komponentti WHERE id = ?", (id_value,))
+        CONN.commit()
+        print("Komponentti poistettu")
+    except Exception as e:
+        print("ERROR:", e)
+
+def delete_ui():
+    try:
+        print("BUTTON CLICKED")
+
+        id_value = int(id_entry.get())
+        tyyppi = combo_poista.get()
+
+        print("TYPE:", tyyppi)
+        print("ID:", id_value)
+
+        if tyyppi == "Tietokone":
+            poista_tietokone(id_value)
+        elif tyyppi == "Komponentti":
+            poista_komponentti(id_value)
+
+    except ValueError:
+        print("ERROR: ID must be a number")
+    except Exception as e:
+        print("ERROR:", e)
+
+
+
+
+
+
 del_frame = tk.Frame(root)
 del_frame.pack(pady=10)
 
 # DROPDOWN MENU
 ttk.Label(del_frame, text="Tyyppi").grid(row=0, column=0)
-combo = ttk.Combobox(del_frame, values=["Tietokone", "Komponentti"], width=15)
-combo.grid(row=0, column=1)
-combo.current(0)
+combo_poista = ttk.Combobox(del_frame, values=["Tietokone", "Komponentti"], width=15)
+combo_poista.grid(row=0, column=1)
+combo_poista.current(0)
 
 # id
 ttk.Label(del_frame, text="Id").grid(row=0, column=2)
 id_entry = ttk.Entry(del_frame, width=15)
 id_entry.grid(row=0, column=3)
 # Button
-btn = ttk.Button(del_frame, text="Poista")
+btn = ttk.Button(del_frame, text="Poista", command=delete_ui)
 btn.grid(row=0, column=6, padx=10)
 
+
+
+
 # päivitettävän
+def paivita_tuotteen_tiedot(nimi, uusi_hinta=None, uusi_maara=None, luokka="tietokone"):
+    """
+    Update product information directly in the database.
+
+    Parameters:
+        nimi (str): Name of the product (merkki for tietokone, nimi for komponentti)
+        uusi_hinta (float, optional): New price
+        uusi_maara (int, optional): New quantity
+        luokka (str): "tietokone" or "komponentti"
+
+    Returns:
+        None
+    """
+    luokka = luokka.lower().strip()
+    # Choose table and column for name
+    if luokka == "tietokone":
+        table = "tietokone"
+        name_col = "merkki"
+    elif luokka == "komponentti":
+        table = "komponentti"
+        name_col = "nimi"
+    else:
+        print("Virhe: tuntematon tuoteluokka")
+        return
+
+    # Build SQL dynamically depending on which fields to update
+    fields = []
+    values = []
+    if uusi_hinta is not None:
+        if uusi_hinta < 0:
+            print("Virhe: Hinta ei voi olla negatiivinen")
+            return
+        fields.append("hinta = ?")
+        values.append(uusi_hinta)
+    if uusi_maara is not None:
+        if uusi_maara < 0:
+            print("Virhe: Määrä ei voi olla negatiivinen")
+            return
+        fields.append("maara = ?")
+        values.append(uusi_maara)
+
+    if not fields:
+        print("Ei muutettavia tietoja.")
+        return
+
+    # Add the name for WHERE clause
+    values.append(nimi)
+
+    sql = f"UPDATE {table} SET {', '.join(fields)} WHERE {name_col} = ? COLLATE NOCASE"
+
+    cursor = CONN.cursor()
+    cursor.execute(sql, values)
+    CONN.commit()
+
+    if cursor.rowcount == 0:
+        print(f"Tuotetta '{nimi}' ei löytynyt tietokannasta.")
+    else:
+        print(
+            f"{nimi} päivitetty onnistuneesti: hinta={uusi_hinta}, määrä={uusi_maara}")
 
 
-pävitä_frame = tk.Frame(root)
-pävitä_frame.pack(pady=10)
+def paivita_tuote_ui():
+    try:
+        print("UPDATE CLICKED")
 
-ttk.Label(pävitä_frame, text="Tyyppi").grid(row=0, column=0)
-combo = ttk.Combobox(pävitä_frame, values=[
+        nimi = nimi_entry.get()
+        luokka = combo_paivita.get()
+
+        hinta = uusihinta_entry.get()
+        maara = uusimaara_entry.get()
+
+        if hinta == "":
+            hinta = None
+        else:
+            hinta = float(hinta)
+
+        if maara == "":
+            maara = None
+        else:
+            maara = int(maara)
+
+        paivita_tuotteen_tiedot(nimi, hinta, maara, luokka)
+
+    except Exception as e:
+        print("ERROR:", e)
+
+
+
+
+paivita_frame = tk.Frame(root)
+paivita_frame.pack(pady=10)
+
+ttk.Label(paivita_frame, text="Tyyppi").grid(row=0, column=0)
+combo_paivita = ttk.Combobox(paivita_frame, values=[
                      "Tietokone", "Komponentti"], width=15)
-combo.grid(row=0, column=1)
-combo.current(0)
+combo_paivita.grid(row=0, column=1)
+combo_paivita.current(0)
 
-ttk.Label(pävitä_frame, text="Nimi").grid(row=0, column=2)
-nimi_entry = ttk.Entry(pävitä_frame, width=15)
+ttk.Label(paivita_frame, text="Nimi").grid(row=0, column=2)
+nimi_entry = ttk.Entry(paivita_frame, width=15)
 nimi_entry.grid(row=0, column=3)
 
 
-ttk.Label(pävitä_frame, text="UusiHinta").grid(row=0, column=6)
-uusihinta_entry = ttk.Entry(pävitä_frame, width=10)
+ttk.Label(paivita_frame, text="UusiHinta").grid(row=0, column=6)
+uusihinta_entry = ttk.Entry(paivita_frame, width=10)
 uusihinta_entry.grid(row=0, column=7)
 
-ttk.Label(pävitä_frame, text="UusiMäärä").grid(row=0, column=8)
-uusimaara_entry = ttk.Entry(pävitä_frame, width=10)
+ttk.Label(paivita_frame, text="UusiMäärä").grid(row=0, column=8)
+uusimaara_entry = ttk.Entry(paivita_frame, width=10)
 uusimaara_entry.grid(row=0, column=9)
 
-ttk.Button(pävitä_frame, text="Pävitä").grid(row=0, column=10, padx=10)
+ttk.Button(paivita_frame, text="paivita", command=paivita_tuote_ui).grid(row=0, column=10, padx=10)
 
 
 def sulje_ohjelma():
