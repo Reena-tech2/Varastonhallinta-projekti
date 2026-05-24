@@ -150,8 +150,6 @@ ttk.Button(add_frame, text="Lisää", command=lisaa_tuote_ui).grid(
     row=0, column=10, padx=10)
 
 
-
-
 # Poista tuote
 def poista_tietokone(id_value):
     try:
@@ -162,14 +160,16 @@ def poista_tietokone(id_value):
     except Exception as e:
         print("ERROR (tietokone):", e)
 
+
 def poista_komponentti(id_value):
     try:
         cur = CONN.cursor()
-        cur.execute("SELECT * FROM komponentti WHERE id = ?", (id_value,))
+        cur.execute("DELETE FROM komponentti WHERE id = ?", (id_value,))
         CONN.commit()
         print("Komponentti poistettu")
     except Exception as e:
         print("ERROR:", e)
+
 
 def delete_ui():
     try:
@@ -192,16 +192,13 @@ def delete_ui():
         print("ERROR:", e)
 
 
-
-
-
-
 del_frame = tk.Frame(root)
 del_frame.pack(pady=10)
 
 # DROPDOWN MENU
 ttk.Label(del_frame, text="Tyyppi").grid(row=0, column=0)
-combo_poista = ttk.Combobox(del_frame, values=["Tietokone", "Komponentti"], width=15)
+combo_poista = ttk.Combobox(
+    del_frame, values=["Tietokone", "Komponentti"], width=15)
 combo_poista.grid(row=0, column=1)
 combo_poista.current(0)
 
@@ -212,8 +209,6 @@ id_entry.grid(row=0, column=3)
 # Button
 btn = ttk.Button(del_frame, text="Poista", command=delete_ui)
 btn.grid(row=0, column=6, padx=10)
-
-
 
 
 # päivitettävän
@@ -304,14 +299,12 @@ def paivita_tuote_ui():
         print("ERROR:", e)
 
 
-
-
 paivita_frame = tk.Frame(root)
 paivita_frame.pack(pady=10)
 
 ttk.Label(paivita_frame, text="Tyyppi").grid(row=0, column=0)
 combo_paivita = ttk.Combobox(paivita_frame, values=[
-                     "Tietokone", "Komponentti"], width=15)
+    "Tietokone", "Komponentti"], width=15)
 combo_paivita.grid(row=0, column=1)
 combo_paivita.current(0)
 
@@ -328,7 +321,8 @@ ttk.Label(paivita_frame, text="UusiMäärä").grid(row=0, column=8)
 uusimaara_entry = ttk.Entry(paivita_frame, width=10)
 uusimaara_entry.grid(row=0, column=9)
 
-ttk.Button(paivita_frame, text="paivita", command=paivita_tuote_ui).grid(row=0, column=10, padx=10)
+ttk.Button(paivita_frame, text="paivita", command=paivita_tuote_ui).grid(
+    row=0, column=10, padx=10)
 
 
 def sulje_ohjelma():
