@@ -183,13 +183,22 @@ def delete_ui():
 
         if tyyppi == "Tietokone":
             poista_tietokone(id_value)
+            messagebox.showinfo("Onnistui", "Tietokone poistettu onnistuneesti!")
         elif tyyppi == "Komponentti":
             poista_komponentti(id_value)
+            messagebox.showinfo("Onnistui", "Komponentti poistettu onnistuneesti!")
+        else:
+            messagebox.showwarning("Varoitus", "Valitse ensin tyyppi!")
 
     except ValueError:
-        print("ERROR: ID must be a number")
+        messagebox.showerror("Virhe", "ID täytyy olla numero!")
+
     except Exception as e:
-        print("ERROR:", e)
+        messagebox.showerror("Virhe", str(e))
+        
+
+    
+        
 
 
 del_frame = tk.Frame(root)
@@ -294,10 +303,14 @@ def paivita_tuote_ui():
             maara = int(maara)
 
         paivita_tuotteen_tiedot(nimi, hinta, maara, luokka)
+        messagebox.showinfo("Onnistui", "Tuotteen tiedot päivitetty!")
+
+    except ValueError:
+        messagebox.showerror("Virhe", "Hinta täytyy olla numero ja määrä kokonaisluku!")
 
     except Exception as e:
-        print("ERROR:", e)
-
+        messagebox.showerror("Virhe", str(e))
+    
 
 paivita_frame = tk.Frame(root)
 paivita_frame.pack(pady=10)
@@ -323,6 +336,33 @@ uusimaara_entry.grid(row=0, column=9)
 
 ttk.Button(paivita_frame, text="paivita", command=paivita_tuote_ui).grid(
     row=0, column=10, padx=10)
+
+
+
+def search_product():
+    name = search_entry.get().strip()
+
+    text_box.delete("1.0", tk.END)
+
+    
+    results = []
+    cursor.execute("SELECT id, merkki, malli, hinta, maara FROM tietokone WHERE merkki LIKE ? OR malli LIKE ?", ('%'+name+'%', '%'+name+'%'))
+    results.extend([('tietokone',) + row for row in cursor.fetchall()])
+    cursor.execute("SELECT id, nimi, hinta, maara FROM komponentti WHERE nimi LIKE ?", ('%'+name+'%',))
+    results.extend([('komponentti',) + row for row in cursor.fetchall()])
+
+    if not results:
+        messagebox.showinfo("Result", "No product found")
+        return
+
+    for row in results:
+        text_box.insert(tk.END, str(row) + "\n")
+tk.Label(root, text="Search Product by Name").pack()
+
+search_entry = tk.Entry(root)
+search_entry.pack()
+
+tk.Button(root, text="Search", command=search_product).pack()
 
 
 def sulje_ohjelma():
