@@ -357,13 +357,15 @@ def search_product():
 
     for row in results:
         text_box.insert(tk.END, str(row) + "\n")
-tk.Label(root, text="Search Product by Name").pack()
 
+btn = tk.Label(root, text="Hae tuotetta nimellä")
+btn.pack(pady=7)
 search_entry = tk.Entry(root)
 search_entry.pack()
 
-tk.Button(root, text="Search", command=search_product).pack()
 
+btn = tk.Button(root, text="Haku", command=search_product)
+btn.pack(pady=5)
 
 def sulje_ohjelma():
     root.destroy()   # closes the window + ends program
